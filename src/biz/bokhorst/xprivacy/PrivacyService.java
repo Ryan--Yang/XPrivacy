@@ -84,8 +84,8 @@ public class PrivacyService extends IPrivacyService.Stub {
 	private static final String cTableUsage = "usage";
 	private static final String cTableSetting = "setting";
 
-	private static final int cCurrentVersion = 471;
-	private static final String cServiceName = "xprivacy471";
+	private static final int cCurrentVersion = 479;
+	private static final String cServiceName = "xprivacy479";
 
 	private boolean mCorrupt = false;
 	private boolean mNotified = false;
@@ -168,9 +168,21 @@ public class PrivacyService extends IPrivacyService.Stub {
 
 			// Get context
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				Field fContext = am.getClass().getDeclaredField("mContext");
-				fContext.setAccessible(true);
-				mContext = (Context) fContext.get(am);
+				Field fContext = null;
+				Class<?> cam = am.getClass();
+				while (cam != null && fContext == null)
+					try {
+						fContext = cam.getDeclaredField("mContext");
+					} catch (NoSuchFieldException ignored) {
+						cam = cam.getSuperclass();
+					}
+
+				if (fContext == null)
+					Util.log(null, Log.ERROR, am.getClass().getName() + ".mContext not found");
+				else {
+					fContext.setAccessible(true);
+					mContext = (Context) fContext.get(am);
+				}
 			}
 
 			// Start a worker thread
@@ -239,7 +251,6 @@ public class PrivacyService extends IPrivacyService.Stub {
 			IPrivacyService client = getClient();
 			if (client == null) {
 				Log.w("XPrivacy", "No client for " + restriction);
-				Log.w("XPrivacy", Log.getStackTraceString(new Exception("StackTrace")));
 				PRestriction result = new PRestriction(restriction);
 				result.restricted = false;
 				return result;
@@ -2316,18 +2327,20 @@ public class PrivacyService extends IPrivacyService.Stub {
 	private int getIsolatedUid(int uid) {
 		if (PrivacyManager.isIsolated(uid))
 			try {
-				Class<?> cam;
-				Object am;
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					cam = mAm.getClass();
-					am = mAm;
-				} else {
-					cam = Class.forName("com.android.server.am.ActivityManagerService");
-					am = cam.getMethod("self").invoke(null);
-				}
-				Field fmIsolatedProcesses = cam.getDeclaredField("mIsolatedProcesses");
+				Field fmIsolatedProcesses = null;
+				Class<?> cam = mAm.getClass();
+				while (cam != null && fmIsolatedProcesses == null)
+					try {
+						fmIsolatedProcesses = cam.getDeclaredField("mIsolatedProcesses");
+					} catch (NoSuchFieldException ignored) {
+						cam = cam.getSuperclass();
+					}
+
+				if (fmIsolatedProcesses == null)
+					throw new Exception(mAm.getClass().getName() + ".mIsolatedProcesses not found");
+
 				fmIsolatedProcesses.setAccessible(true);
-				SparseArray<?> mIsolatedProcesses = (SparseArray<?>) fmIsolatedProcesses.get(am);
+				SparseArray<?> mIsolatedProcesses = (SparseArray<?>) fmIsolatedProcesses.get(mAm);
 				Object processRecord = mIsolatedProcesses.get(uid);
 				Field fInfo = processRecord.getClass().getDeclaredField("info");
 				fInfo.setAccessible(true);

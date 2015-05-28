@@ -337,7 +337,7 @@ public class PrivacyManager {
 		PRestriction result = new PRestriction(uid, restrictionName, methodName, false, true);
 
 		// Check uid
-		if (uid <= 0 || uid == Process.SYSTEM_UID)
+		if (uid <= 0)
 			return false;
 
 		// Check secret
@@ -462,8 +462,12 @@ public class PrivacyManager {
 		int _uid = Util.getAppId(uid);
 		int userId = Util.getUserId(uid);
 
-		if (_uid == Process.SYSTEM_UID && PrivacyManager.cIdentification.equals(restrictionName))
-			return false;
+		if (_uid == Process.SYSTEM_UID) {
+			if (PrivacyManager.cIdentification.equals(restrictionName))
+				return false;
+			if (PrivacyManager.cShell.equals(restrictionName) && "loadLibrary".equals(methodName))
+				return false;
+		}
 
 		if (system)
 			if (!isApplication(_uid))

@@ -300,9 +300,9 @@ public class Requirements {
 		checkService(context, Context.ACTIVITY_SERVICE, new String[] { "android.app.ActivityManager",
 				"android.app.ActivityManagerEx" });
 		checkService(context, Context.CLIPBOARD_SERVICE, new String[] { "android.content.ClipboardManager" });
-		checkService(context, Context.CONNECTIVITY_SERVICE,
-				new String[] { "android.net.ConnectivityManager", "android.net.MultiSimConnectivityManager",
-						"android.privacy.surrogate.PrivacyConnectivityManager" /* PDroid */});
+		checkService(context, Context.CONNECTIVITY_SERVICE, new String[] { "android.net.ConnectivityManager",
+				"android.net.ConnectivityManagerEx", "android.net.MultiSimConnectivityManager",
+				"android.privacy.surrogate.PrivacyConnectivityManager" /* PDroid */});
 		checkService(context, Context.LOCATION_SERVICE,
 				new String[] { "android.location.LocationManager", "android.location.ZTEPrivacyLocationManager",
 						"android.privacy.surrogate.PrivacyLocationManager" /* PDroid */});
@@ -391,8 +391,7 @@ public class Requirements {
 	public static void sendSupportInfo(final String text, final ActivityBase context) {
 		Util.log(null, Log.WARN, text);
 
-		if (Util.hasValidFingerPrint(context) && !"true".equals(System.getenv("XPrivacy.AOSP"))
-				&& !"htc_europe".equals(Build.PRODUCT)) {
+		if (Util.hasValidFingerPrint(context) && !"Genymotion".equals(Build.MANUFACTURER)) {
 			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 			alertDialogBuilder.setTitle(R.string.app_name);
 			alertDialogBuilder.setMessage(R.string.msg_support_info);
@@ -419,8 +418,9 @@ public class Requirements {
 
 							Intent sendEmail = new Intent(Intent.ACTION_SEND);
 							sendEmail.setType("message/rfc822");
-							sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[] { "marcel+xprivacy@faircode.eu" });
-							sendEmail.putExtra(Intent.EXTRA_SUBJECT, "XPrivacy " + ourVersion + " debug info");
+							sendEmail.putExtra(Intent.EXTRA_EMAIL, new String[] { "marcel+support@faircode.eu" });
+							sendEmail.putExtra(Intent.EXTRA_SUBJECT, "XPrivacy " + ourVersion + "/"
+									+ Build.VERSION.RELEASE + " support info");
 							sendEmail.putExtra(Intent.EXTRA_TEXT, sb.toString());
 							try {
 								context.startActivity(sendEmail);

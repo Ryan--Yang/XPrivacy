@@ -16,15 +16,57 @@ Changelog
 
 **Important**
 
-* **Please send the support info when XPrivacy asks for it**
-* **Android 5.0.x (lollipop): please read the [installation instructions](https://github.com/M66B/XPrivacy/#installation)**
-* **Android 5.0.x (Lollipop): XPrivacy will cause a bootloop on some ROMs due to a bug in Xposed** ([issue](https://github.com/M66B/XPrivacy/issues/2162))
+* **Please send the support info if XPrivacy asks for it**
 
 **Next release**
 
-* ...
+*...
 
 [Open issues](https://github.com/M66B/XPrivacy/issues?state=open)
+
+**Version 3.6.17 BETA**
+
+* Fixed bootloop in some cases for Android versions before Lollipop ([issue](/../../issues/2209))
+
+**Version 3.6.16 BETA**
+
+* Fixed crash on clear cache (flush) on Lollipop
+* Fixed translation of isolated process uids (debug info)
+* Reading property *xprivacy.options=ignoreselinux* from */system/build.prop* to ignore SELinux
+	* Settings this property enables reading of these files again, but might result in a bootloop for some:
+		* */data/system/xprivacy/disabled*
+		* */data/system/xprivacy/aosp*
+			* This file can be created/deleted by toggling the main setting *AOSP mode*
+
+**Version 3.6.15 BETA**
+
+* Fixed privacy service not running with older Xposed releases ([issue](/../../issues/2206))
+
+**Version 3.6.14 BETA**
+
+* Fixed on demand restricting for some custom ROMs (OPPO)
+* Fixed (telephony) restrictions for Android versions before Lollipop ([issue](/../../issues/2202))
+* Running XPrivacy in compatibility mode on Android 5.x, except for stock ROMs ([issue](/../../issues/2201))
+
+**Version 3.6.13 BETA**
+
+* Fixed *getDeviceId* (IMEI) restriction for Android 5.0.x ([issue](/../../issues/2200))
+* Added an second folder for importing the pro license
+
+**Version 3.6.12 BETA**
+
+* Fixed Android 5.x *getDeviceId* (IMEI) restriction ([issue](/../../issues/2198))
+* Added Android 5.x multi-SIM restriction support
+
+**Version 3.6.11 TEST**
+
+* Fixed Android 5.x restrictions ([issue](/../../issues/2195))
+
+**Version 3.6.10 TEST**
+
+* Android 5.x compatibility
+
+Big thanks to [dk-zero-cool](https://github.com/dk-zero-cool) !
 
 **Version 3.6.9 STABLE**
 

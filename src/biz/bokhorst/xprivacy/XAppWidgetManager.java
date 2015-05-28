@@ -42,12 +42,15 @@ public class XAppWidgetManager extends XHook {
 		getInstalledProviders, getInstalledProvidersForProfile, Srv_getInstalledProviders, Srv_getInstalledProvidersForProfile
 	};
 
-	public static List<XHook> getInstances() {
+	public static List<XHook> getInstances(boolean server) {
 		List<XHook> listHook = new ArrayList<XHook>();
-		listHook.add(new XAppWidgetManager(Methods.getInstalledProviders, PrivacyManager.cSystem));
-		listHook.add(new XAppWidgetManager(Methods.getInstalledProvidersForProfile, PrivacyManager.cSystem));
-		listHook.add(new XAppWidgetManager(Methods.Srv_getInstalledProviders, PrivacyManager.cSystem));
-		listHook.add(new XAppWidgetManager(Methods.Srv_getInstalledProvidersForProfile, PrivacyManager.cSystem));
+		if (server) {
+			listHook.add(new XAppWidgetManager(Methods.Srv_getInstalledProviders, PrivacyManager.cSystem));
+			listHook.add(new XAppWidgetManager(Methods.Srv_getInstalledProvidersForProfile, PrivacyManager.cSystem));
+		} else {
+			listHook.add(new XAppWidgetManager(Methods.getInstalledProviders, PrivacyManager.cSystem));
+			listHook.add(new XAppWidgetManager(Methods.getInstalledProvidersForProfile, PrivacyManager.cSystem));
+		}
 		return listHook;
 	}
 

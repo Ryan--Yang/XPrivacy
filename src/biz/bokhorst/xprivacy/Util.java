@@ -54,6 +54,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+@SuppressWarnings("deprecation")
 public class Util {
 	private static boolean mPro = false;
 	private static boolean mLog = true;
@@ -277,6 +278,9 @@ public class Util {
 		File licenseFile = new File(storageDir + File.separator + LICENSE_FILE_NAME);
 		if (!licenseFile.exists())
 			licenseFile = new File(storageDir + File.separator + ".xprivacy" + File.separator + LICENSE_FILE_NAME);
+		if (!licenseFile.exists())
+			licenseFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+					+ File.separator + LICENSE_FILE_NAME);
 
 		String importedLicense = importProLicense(licenseFile);
 		if (importedLicense == null)
@@ -432,6 +436,38 @@ public class Util {
 			}
 		}
 		return mHasLBE;
+	}
+
+	public static boolean isSELinuxEnforced() {
+		try {
+			Class<?> cSELinux = Class.forName("android.os.SELinux");
+			if ((Boolean) cSELinux.getDeclaredMethod("isSELinuxEnabled").invoke(null))
+				if ((Boolean) cSELinux.getDeclaredMethod("isSELinuxEnforced").invoke(null))
+					return true;
+		} catch (Throwable t) {
+		}
+		return false;
+	}
+
+	public static String getXOption(String name) {
+		try {
+			Class<?> cSystemProperties = Class.forName("android.os.SystemProperties");
+			Method spGet = cSystemProperties.getDeclaredMethod("get", String.class);
+			String options = (String) spGet.invoke(null, "xprivacy.options");
+			Log.w("XPrivacy", "Options=" + options);
+			if (options != null)
+				for (String option : options.split(",")) {
+					String[] nv = option.split("=");
+					if (nv[0].equals(name))
+						if (nv.length > 1)
+							return nv[1];
+						else
+							return "true";
+				}
+		} catch (Throwable ex) {
+			Log.e("XPrivacy", ex.toString() + "\n" + Log.getStackTraceString(ex));
+		}
+		return null;
 	}
 
 	public static int getSelfVersionCode(Context context) {
